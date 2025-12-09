@@ -92,7 +92,8 @@ const Scene3D: React.FC = () => {
   useEffect(() => {
     // Detect low performance devices (mobile or low memory)
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    const lowMemory = navigator.deviceMemory !== undefined && navigator.deviceMemory < 4;
+    const nav = navigator as Navigator & { deviceMemory?: number };
+    const lowMemory = nav.deviceMemory !== undefined && nav.deviceMemory < 4;
     setIsLowPerf(isMobile || lowMemory);
   }, []);
 
