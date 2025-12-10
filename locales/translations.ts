@@ -200,7 +200,7 @@ export const translations = {
       aiTitle: 'AI 商务经理',
       aiDesc: '这是一个专门训练用于商务洽谈的 AI 代理。它可以根据您的需求提供初步报价估算、技术方案建议或安排会议。',
       inputPlaceholder: '描述您的项目需求（例如：我需要一个类似 Airbnb 的小程序...）',
-      quickActions: ['你对AI的看法', '你的计算机学习经历', '学历', 'AI分身的原理', '该网站的架构', '获取联系方式'],
+      quickActions: ['你对AI的看法', '你的计算机学习经历', '学历', 'AI分身的原理', '获取联系方式'],
       initialMsg: '您好！我是 Ling 的商务代理人。请告诉我您想构建什么，或者您面临的技术挑战，我会为您提供专业的建议和初步估算。'
     }
   },
@@ -402,7 +402,7 @@ export const translations = {
       aiTitle: 'AI Business Manager',
       aiDesc: 'This is an AI agent trained specifically for business negotiations. It can provide preliminary quote estimates, technical proposals, or schedule meetings.',
       inputPlaceholder: 'Describe your project (e.g., I need an Airbnb-like app...)',
-      quickActions: ['Your view on AI', 'Your CS learning journey', 'Education', 'How AI Avatar works', 'This site architecture', 'Get Contact Info'],
+      quickActions: ['Your view on AI', 'Your CS learning journey', 'Education', 'How AI Avatar works', 'Get Contact Info'],
       initialMsg: 'Hello! I am Ling\'s Business Agent. Tell me what you want to build or what technical challenges you are facing, and I will provide professional advice and rough estimates.'
     }
   }
