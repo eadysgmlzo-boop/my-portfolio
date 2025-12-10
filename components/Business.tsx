@@ -2,10 +2,10 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Bot, User, Loader2, ChevronRight, ChevronUp, Info, AlertCircle, Phone, Mail, Square } from 'lucide-react';
+import { Send, Bot, User, Loader2, ChevronRight, ChevronUp, Info, AlertCircle, Phone, Mail, Square, RotateCcw } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 // SWITCHED TO DIFY SERVICE
-import { streamChatResponse, CONNECTION_ERROR_FLAG, stopGeneration } from '@/services/difyService';
+import { streamChatResponse, CONNECTION_ERROR_FLAG, stopGeneration, resetConversation } from '@/services/difyService';
 import { ChatMessage } from '@/types';
 import QRCode from 'react-qr-code';
 import ReactMarkdown from 'react-markdown';
@@ -102,6 +102,14 @@ const Business: React.FC = () => {
   const handleStop = () => {
     stopGeneration();
     setIsTyping(false);
+  };
+
+  // 重置对话
+  const handleReset = () => {
+    resetConversation();
+    setMessages([
+      { id: 'init', role: 'model', text: initialMsgText, timestamp: Date.now() }
+    ]);
   };
 
   const renderMessageContent = (msg: ChatMessage) => {
@@ -231,12 +239,21 @@ const Business: React.FC = () => {
                   <p className="text-sm text-txt-muted hidden md:block">{t('business.subtitle')}</p>
               </div>
               
-              <button 
-                onClick={() => setIsInfoExpanded(!isInfoExpanded)}
-                className="md:hidden p-2 bg-glass/10 rounded-lg text-txt-main"
-              >
-                  {isInfoExpanded ? <ChevronUp size={20} /> : <Info size={20} />}
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleReset}
+                  className="p-2 bg-glass/10 hover:bg-glass/20 rounded-lg text-txt-muted hover:text-primary transition-colors"
+                  title={language === 'zh-CN' ? '重新开始' : 'New Chat'}
+                >
+                  <RotateCcw size={20} />
+                </button>
+                <button
+                  onClick={() => setIsInfoExpanded(!isInfoExpanded)}
+                  className="md:hidden p-2 bg-glass/10 rounded-lg text-txt-main"
+                >
+                    {isInfoExpanded ? <ChevronUp size={20} /> : <Info size={20} />}
+                </button>
+              </div>
           </div>
 
           {/* Messages */}
