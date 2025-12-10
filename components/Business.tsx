@@ -2,10 +2,10 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Bot, User, Loader2, ChevronRight, ChevronUp, Info, AlertCircle, Phone, Mail, Square, RotateCcw } from 'lucide-react';
+import { Send, Bot, User, Loader2, ChevronRight, ChevronUp, Info, AlertCircle, Phone, Mail, RotateCcw } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 // SWITCHED TO DIFY SERVICE
-import { streamChatResponse, CONNECTION_ERROR_FLAG, stopGeneration, resetConversation } from '@/services/difyService';
+import { streamChatResponse, CONNECTION_ERROR_FLAG, resetConversation } from '@/services/difyService';
 import { ChatMessage } from '@/types';
 import QRCode from 'react-qr-code';
 import ReactMarkdown from 'react-markdown';
@@ -96,12 +96,6 @@ const Business: React.FC = () => {
       e.preventDefault();
       handleSend(input);
     }
-  };
-
-  // 停止生成
-  const handleStop = () => {
-    stopGeneration();
-    setIsTyping(false);
   };
 
   // 重置对话
@@ -323,23 +317,13 @@ const Business: React.FC = () => {
                     className="flex-1 bg-surface border border-glass/10 rounded-xl px-5 py-4 text-txt-main placeholder-txt-muted focus:outline-none focus:border-primary transition-colors shadow-inner"
                     disabled={isTyping}
                   />
-                  {isTyping ? (
-                    <button
-                      onClick={handleStop}
-                      className="p-4 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-all shadow-lg shadow-red-500/20 hover:scale-105"
-                      title={language === 'zh-CN' ? '停止生成' : 'Stop'}
-                    >
-                      <Square size={20} fill="currentColor" />
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => handleSend(input)}
-                      disabled={!input.trim()}
-                      className="p-4 bg-primary text-white rounded-xl hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-primary/20 hover:scale-105"
-                    >
-                      <Send size={20} />
-                    </button>
-                  )}
+                  <button
+                    onClick={() => handleSend(input)}
+                    disabled={!input.trim() || isTyping}
+                    className="p-4 bg-primary text-white rounded-xl hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-primary/20 hover:scale-105"
+                  >
+                    <Send size={20} />
+                  </button>
               </div>
           </div>
       </div>
