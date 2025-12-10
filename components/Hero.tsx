@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { ArrowRight, Sparkles, Terminal, MessageSquare } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import Scene3D from '@/components/Scene3D';
 
 const Hero: React.FC<{ onContactClick: () => void }> = ({ onContactClick }) => {
   const { t } = useLanguage();
@@ -60,18 +59,25 @@ const Hero: React.FC<{ onContactClick: () => void }> = ({ onContactClick }) => {
 
   return (
     <div className="h-full flex flex-col justify-center items-center relative z-10 px-4 text-center overflow-hidden">
-      
-      {/* 3D Scene Background */}
-      <Scene3D />
 
-      {/* Background Spotlight Effect (Kept for depth behind 3D model) */}
-      <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full blur-[120px] pointer-events-none z-10 opacity-5"
-        style={{
-          backgroundColor: 'rgb(var(--primary-rgb))',
-          boxShadow: '0 0 200px 100px rgba(var(--primary-rgb), 0.1)'
-        }}
-      />
+      {/* Static Background Decoration */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        {/* Gradient Glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-primary/10 blur-[100px]" />
+        <div className="absolute top-1/3 right-1/4 w-[400px] h-[400px] rounded-full bg-secondary/10 blur-[80px]" />
+
+        {/* Decorative Shapes */}
+        <svg className="absolute top-20 right-20 opacity-10" width="120" height="120" viewBox="0 0 100 100" fill="none" stroke="rgb(var(--color-primary))" strokeWidth="1">
+          <circle cx="50" cy="50" r="40" />
+          <circle cx="50" cy="50" r="25" />
+        </svg>
+        <svg className="absolute bottom-32 left-20 opacity-10" width="100" height="100" viewBox="0 0 100 100" fill="none" stroke="rgb(var(--color-secondary))" strokeWidth="1">
+          <rect x="20" y="20" width="60" height="60" transform="rotate(15 50 50)" />
+        </svg>
+        <svg className="absolute top-1/3 left-10 opacity-10" width="80" height="80" viewBox="0 0 100 100" fill="none" stroke="rgb(var(--color-accent))" strokeWidth="1">
+          <polygon points="50,10 90,90 10,90" />
+        </svg>
+      </div>
 
       {/* Content Container */}
       <motion.div 

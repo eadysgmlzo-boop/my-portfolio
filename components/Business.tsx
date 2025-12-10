@@ -2,12 +2,14 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Bot, User, Loader2, ChevronRight, ChevronUp, Info, AlertCircle, Phone, Mail } from 'lucide-react';
+import { Send, Bot, User, Loader2, ChevronRight, ChevronUp, Info, AlertCircle, Phone, Mail, Square } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 // SWITCHED TO DIFY SERVICE
-import { streamChatResponse, CONNECTION_ERROR_FLAG } from '@/services/difyService';
+import { streamChatResponse, CONNECTION_ERROR_FLAG, stopGeneration } from '@/services/difyService';
 import { ChatMessage } from '@/types';
 import QRCode from 'react-qr-code';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 const Business: React.FC = () => {
   const { t, language } = useLanguage();
@@ -96,6 +98,12 @@ const Business: React.FC = () => {
     }
   };
 
+  // 停止生成
+  const handleStop = () => {
+    stopGeneration();
+    setIsTyping(false);
+  };
+
   const renderMessageContent = (msg: ChatMessage) => {
     if (msg.text === CONNECTION_ERROR_FLAG && msg.role === 'model') {
         return (
@@ -149,8 +157,60 @@ const Business: React.FC = () => {
         );
     }
     
-    // Regular text rendering
-    return <span className="whitespace-pre-wrap">{msg.text}</span>;
+    // Regular text rendering with Markdown
+    return (
+      <div className="markdown-content">
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
+          components={{
+            // 表格样式
+            table: ({ children }) => (
+              <table className="border-collapse text-xs my-2 w-full">{children}</table>
+            ),
+            th: ({ children }) => (
+              <th className="border border-glass/20 px-2 py-1 bg-glass/10 text-left font-semibold">{children}</th>
+            ),
+            td: ({ children }) => (
+              <td className="border border-glass/20 px-2 py-1">{children}</td>
+            ),
+            // 代码块样式
+            code: ({ className, children }) => {
+              const isInline = !className;
+              return isInline ? (
+                <code className="bg-glass/20 px-1 py-0.5 rounded text-xs font-mono">{children}</code>
+              ) : (
+                <code className="block bg-glass/10 p-2 rounded-lg text-xs font-mono overflow-x-auto my-2">{children}</code>
+              );
+            },
+            // 段落样式
+            p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+            // 列表样式
+            ul: ({ children }) => <ul className="list-disc list-inside mb-2 space-y-1">{children}</ul>,
+            ol: ({ children }) => <ol className="list-decimal list-inside mb-2 space-y-1">{children}</ol>,
+            // 链接样式
+            a: ({ href, children }) => (
+              <a href={href} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{children}</a>
+            ),
+            // 加粗
+            strong: ({ children }) => <strong className="font-bold text-txt-main">{children}</strong>,
+            // 标题
+            h1: ({ children }) => <h1 className="text-lg font-bold mb-2 mt-3">{children}</h1>,
+            h2: ({ children }) => <h2 className="text-base font-bold mb-2 mt-3">{children}</h2>,
+            h3: ({ children }) => <h3 className="text-sm font-bold mb-1 mt-2">{children}</h3>,
+            // 引用块
+            blockquote: ({ children }) => (
+              <blockquote className="border-l-2 border-primary/50 pl-3 my-2 text-txt-muted italic">{children}</blockquote>
+            ),
+          }}
+        >
+          {msg.text}
+        </ReactMarkdown>
+        {/* 流式输出时显示闪烁光标 */}
+        {isTyping && messages[messages.length - 1]?.id === msg.id && msg.role === 'model' && (
+          <span className="inline-block w-2 h-4 bg-primary/80 ml-0.5 animate-pulse" />
+        )}
+      </div>
+    );
   };
 
   return (
@@ -218,7 +278,7 @@ const Business: React.FC = () => {
           </div>
 
           {/* Quick Actions (Horizontal Scroll) */}
-          {!isTyping && messages.length < 5 && (
+          {!isTyping && (
             <div className="px-4 pb-2">
                 <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
                     {quickActions.map((action, idx) => (
@@ -246,13 +306,23 @@ const Business: React.FC = () => {
                     className="flex-1 bg-surface border border-glass/10 rounded-xl px-5 py-4 text-txt-main placeholder-txt-muted focus:outline-none focus:border-primary transition-colors shadow-inner"
                     disabled={isTyping}
                   />
-                  <button
-                    onClick={() => handleSend(input)}
-                    disabled={!input.trim() || isTyping}
-                    className="p-4 bg-primary text-white rounded-xl hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-primary/20 hover:scale-105"
-                  >
-                     {isTyping ? <Loader2 size={20} className="animate-spin" /> : <Send size={20} />}
-                  </button>
+                  {isTyping ? (
+                    <button
+                      onClick={handleStop}
+                      className="p-4 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-all shadow-lg shadow-red-500/20 hover:scale-105"
+                      title={language === 'zh-CN' ? '停止生成' : 'Stop'}
+                    >
+                      <Square size={20} fill="currentColor" />
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => handleSend(input)}
+                      disabled={!input.trim()}
+                      className="p-4 bg-primary text-white rounded-xl hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-primary/20 hover:scale-105"
+                    >
+                      <Send size={20} />
+                    </button>
+                  )}
               </div>
           </div>
       </div>
